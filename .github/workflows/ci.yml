@@ -3,29 +3,44 @@ name: CI
 on:
   push:
     branches: ["**"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: ".python-version"
 
       - name: Install uv
+        run: pip install uv
 
       - name: Install dependencies
+        run: uv pip install -r requirements.txt
 
       - name: Install ruff and mypy
+        run: uv pip install ruff mypy
 
       - name: Ruff format
+        run: uv run ruff format --check .
 
       - name: Ruff linter
+        run: uv run ruff check .
 
       - name: Mypy
+        run: uv run mypy .
 
       - name: Unit tests
+        run: uv run pytest core/tests/unit/
 
       - name: Integration tests
+        run: uv run pytest core/tests/integration
 
       - name: BDD tests
+        run: uv run pytest core/tests/behavior/
