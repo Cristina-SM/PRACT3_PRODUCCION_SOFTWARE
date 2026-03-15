@@ -72,4 +72,3 @@ def remove_nonexistent_expense(context, expense_id):
 def check_expense_not_exists(context, expense_id):
     expense = context["db"].get_by_id(expense_id)
     assert expense is None
-
