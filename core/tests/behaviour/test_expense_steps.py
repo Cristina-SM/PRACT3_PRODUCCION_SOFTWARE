@@ -1,6 +1,7 @@
 from datetime import date
+
 import pytest
-from pytest_bdd import scenarios, given, when, then, parsers
+from pytest_bdd import given, parsers, scenarios, then, when
 
 from core.expense_service import ExpenseService
 from core.in_memory_expense_repository import InMemoryExpenseRepository
@@ -48,3 +49,27 @@ def check_total(context, total):
 def check_expenses_length(context, expenses):
     total = len(context["db"]._expenses)
     assert expenses == total
+
+
+@then(
+    parsers.parse(
+        "el gasto con id {expense_id:d} debe tener un importe de {amount:d} euros"
+    )
+)
+def check_expense_amount(context, expense_id, amount):
+    expense = context["db"].get_by_id(expense_id)
+    assert expense is not None
+    assert expense.amount == amount
+
+
+@then(parsers.parse("elimino el gasto inexistente con id {expense_id:d}"))
+def remove_nonexistent_expense(context, expense_id):
+    value = context["service"].remove_expense(expense_id)
+    assert value
+
+
+@then(parsers.parse("el gasto con id {expense_id:d} no debe existir"))
+def check_expense_not_exists(context, expense_id):
+    expense = context["db"].get_by_id(expense_id)
+    assert expense is None
+
