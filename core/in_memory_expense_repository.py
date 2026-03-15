@@ -14,18 +14,15 @@ class InMemoryExpenseRepository(ExpenseRepository):
         self._expenses.append(expense)
 
     def remove(self, expense_id: int) -> None:
-        """
-        #FIXME
-        Esta función debería eliminar de la lista self._expenses el gasto con la id expense_id.
-
-        :param expense_id:  La id del gasto
-        :return: None
-        """
-        ...
+        for index, existing in enumerate(self._expenses):
+            if existing.id == expense_id:
+                self._expenses.pop(index)
+                return
 
     def get_by_id(self, expense_id: int) -> Expense | None:
         return next(
-            (expense for expense in self._expenses if expense.id == expense_id), None
+            (expense for expense in self._expenses if expense.id == expense_id),
+            None,
         )
 
     def list_all(self) -> list[Expense]:
